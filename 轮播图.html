@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        ul,
+        ol {
+            list-style: none;
+        }
+        
+        img {
+            vertical-align: top;
+        }
+        
+        .scroll {
+            width: 500px;
+            height: 200px;
+            margin: 100px auto;
+            border: 1px solid #ccc;
+            padding: 7px;
+            position: relative;
+        }
+        
+        .box {
+            width: 500px;
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .box ul {
+            width: 500%;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        .box ul li {
+            float: left;
+        }
+        
+        .scroll ol {
+            position: absolute;
+            right: 20px;
+            bottom: 10px;
+        }
+        
+        .scroll ol li {
+            float: left;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            border-radius: 50%;
+            background-color: pink;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        
+        .scroll ol li.current {
+            background-color: purple;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="scroll" class="scroll">
+        <div id="box" class="box">
+            <ul id="ul">
+                <li><img src="images/1.jpg" width="500" height="200"></li>
+                <li><img src="images/2.jpg" width="500" height="200"></li>
+                <li><img src="images/3.jpg" width="500" height="200"></li>
+                <li><img src="images/4.jpg" width="500" height="200"></li>
+                <li><img src="images/5.jpg" width="500" height="200"></li>
+            </ul>
+        </div>
+    </div>
+</body>
+<script>
+    window.onload = function() {
+        function animate(obj, target) {
+            clearInterval(obj.timer);
+            var speed = obj.offsetLeft < target ? 15 : -15;
+            obj.timer = setInterval(function() {
+                var result = target - obj.offsetLeft;
+                obj.style.left = obj.offsetLeft - 15 + 'px';
+                if (Math.abs(result) <= Math.abs(15)) {
+                    console.log(result);
+                    clearInterval(obj.timer);
+                    obj.style.left = target + 'px';
+                }
+
+            }, 10)
+        }
+
+
+        var scroll = document.getElementById('scroll');
+        var ul = document.getElementById('ul');
+
+        var ulLis = ul.children;
+        var liWidth = ul.children[0].offsetWidth;
+
+        ul.appendChild(ul.children[0].cloneNode(true));
+
+        var ol = document.createElement('ol');
+        scroll.appendChild(ol);
+        for (var i = 0; i < ulLis.length - 1; i++) {
+            var li = document.createElement('li');
+            li.innerHTML = i + 1;
+            ol.appendChild(li);
+        }
+        ol.children[0].className = 'current'
+
+
+        //动画开始
+        var olLis = ol.children;
+        for (var i = 0; i < olLis.length; i++) {
+            olLis[i].index = i;
+            olLis[i].onmouseover = function() {
+                for (var j = 0; j < olLis.length; j++) {
+                    olLis[j].className = '';
+                }
+                this.className = 'current';
+                animate(ul, -this.index * liWidth);
+                circle = key = this.index;
+            }
+        }
+        var timer = null;
+        var key = 0;
+        var circle = 0;
+        timer = setInterval(autoplay, 1000); //自动轮播
+        function autoplay() {
+            key++;
+            if (key >= ulLis.length - 1) {
+                ul.style.left = 0;
+                key = 1;
+            }
+            animate(ul, -key * liWidth);
+            circle++;
+            if (circle > olLis.length - 1) {
+                circle = 0;
+            }
+            for (var i = 0; i < olLis.length; i++) {
+                olLis[i].className = '';
+            }
+            olLis[circle].className = 'current';
+        }
+        scroll.onmouseover = function() {
+            clearInterval(timer);
+        }
+        scroll.onmouseout = function() {
+            timer = setInterval(autoplay, 1000);
+        }
+    }
+</script>
+
+</html>
